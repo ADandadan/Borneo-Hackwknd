@@ -3,19 +3,44 @@
 import React, { useState, useEffect } from 'react';
 import { Trash2, AlertTriangle, TrendingDown, DollarSign, Info, Sparkles, Sprout } from 'lucide-react';
 
-interface Product { id: number; name: string; inStock: number; }
+interface Product { id: number; name: string; inStock: number; sellingPrice: number; }
 interface WasteLog {
   id: string; productName: string; quantity: number; reason: string;
   costLost: number; wasteRate: number; aiSuggestion: string; date: string;
 }
 
 export default function WasteTrackerPage() {
+  async function handleSubmit(context: string) {
+    const res = await fetch("/api/gemini", {
+      method: "POST",
+      body: JSON.stringify({ prompt: `Please provide one immediate suggestion on how to handle this wasted food and one long-term suggestion on how to prevent more wastage. The suggestion must be relevant to businesses and relatively simple to enact. Assume this is after the business is closed for customers. Additional context: ${context}` }),
+    });
+    const { result } = await res.json();
+    return result
+  }
+
+
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProductId, setSelectedProductId] = useState('');
   const [quantity, setQuantity] = useState('');
   const [totalBatchStock, setTotalBatchStock] = useState(''); 
   const [reason, setReason] = useState('');
-  const [unitCost, setUnitCost] = useState('');
+  
+  // Derive selected product and auto-calculated values
+  const selectedProduct = products.find(p => p.id === Number(selectedProductId)) || null;
+  const calculatedCost = selectedProduct && quantity
+    ? (Number(quantity) * selectedProduct.sellingPrice).toFixed(2)
+    : '';
+
+  // Auto-fill totalBatchStock and reset quantity when product changes
+  useEffect(() => {
+    if (selectedProduct) {
+      setTotalBatchStock(selectedProduct.inStock.toString());
+      setQuantity('');
+    } else {
+      setTotalBatchStock('');
+    }
+  }, [selectedProductId]);
   
   // Added pre-filled data to show off the AI immediately!
   const [wasteLogs, setWasteLogs] = useState<WasteLog[]>([
@@ -39,28 +64,26 @@ export default function WasteTrackerPage() {
   useEffect(() => {
     const saved = localStorage.getItem('freshstock_products');
     if (saved) setProducts(JSON.parse(saved));
-    else setProducts([{ id: 1, name: 'Fresh Tomatoes', inStock: 50 }, { id: 2, name: 'Nasi Lemak Pre-pack', inStock: 50 }]);
+    else setProducts([{ id: 1, name: 'Fresh Tomatoes', inStock: 50, sellingPrice: 0.5 }, { id: 2, name: 'Nasi Lemak Pre-pack', inStock: 50, sellingPrice: 2 }]);
   }, []);
 
-  const getAiSuggestion = (wasteReason: string) => {
-    switch(wasteReason) {
-      case 'Expired': return "Convert to compost (Buat Baja) for community gardens.";
-      case 'Unsold': return "Donate to local food banks or sell on surplus apps at 50% off.";
-      case 'Returned': return "Investigate quality control. Discard safely to prevent contamination.";
-      case 'Spoiled': return "Check storage temperatures immediately. Compost if organic & safe.";
-      default: return "Review purchasing limits to prevent future overstocking.";
-    }
+  const getAiSuggestion = (productName: string, wasteReason: string, totalCostLost: number, calculatedWasteRate: number) => {
+    return handleSubmit(`1. Product name: ${productName}\n2. Wastage reason: ${wasteReason}\n3. Revenue loss: ${totalCostLost}\n4. Waste rate from original stock quantity: ${calculatedWasteRate}`)
   };
 
-  const handleLogWaste = () => {
+  const handleLogWaste = async () => {
     const product = products.find(p => p.id.toString() === selectedProductId);
-    if (!product || !quantity || !reason || !unitCost || !totalBatchStock) return alert("Please fill in all fields");
+    if (!product || !quantity || !reason || !calculatedCost || !totalBatchStock) return alert("Please fill in all fields");
 
     const qty = parseFloat(quantity);
-    const cost = parseFloat(unitCost);
+
+    // Validate quantity doesn't exceed stock
+    if (qty > product.inStock) return alert(`Waste quantity cannot exceed stock (${product.inStock} units)`);
+
+    const cost = parseFloat(calculatedCost);
     const batchStock = parseFloat(totalBatchStock);
     
-    const totalCostLost = qty * cost;
+    const totalCostLost = qty * product.sellingPrice;
     const calculatedWasteRate = (qty / batchStock) * 100;
 
     const newLog: WasteLog = {
@@ -70,12 +93,13 @@ export default function WasteTrackerPage() {
       reason: reason,
       costLost: totalCostLost,
       wasteRate: calculatedWasteRate,
-      aiSuggestion: getAiSuggestion(reason),
+      aiSuggestion: await getAiSuggestion(product.name, reason, totalCostLost, calculatedWasteRate),
       date: new Date().toLocaleDateString('en-MY')
     };
 
     setWasteLogs([newLog, ...wasteLogs]);
-    setQuantity(''); setReason(''); setUnitCost(''); setTotalBatchStock('');
+    setQuantity(''); setReason(''); setTotalBatchStock('');
+    setSelectedProductId('');
   };
 
   const removeLog = (id: string) => setWasteLogs(wasteLogs.filter(log => log.id !== id));
@@ -99,19 +123,44 @@ export default function WasteTrackerPage() {
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold mb-1.5">Waste Qty</label>
-                <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder="Units wasted" className="w-full p-3 bg-red-50 rounded-lg border border-red-100 outline-none" />
+                <label className="block text-sm font-semibold mb-1.5">
+                  Waste Qty
+                  {selectedProduct && (
+                    <span className="text-xs text-gray-400 font-normal ml-1">(max {selectedProduct.inStock})</span>
+                  )}
+                </label>
+                <input
+                  type="number"
+                  value={quantity}
+                  min={0}
+                  max={selectedProduct?.inStock ?? ''}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  placeholder="Units wasted"
+                  className="w-full p-3 bg-red-50 rounded-lg border border-red-100 outline-none"
+                />
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-1.5">Total Batch Stock</label>
-                <input type="number" value={totalBatchStock} onChange={(e) => setTotalBatchStock(e.target.value)} placeholder="Original qty" className="w-full p-3 bg-red-50 rounded-lg border border-red-100 outline-none" />
+                <input
+                  type="number"
+                  value={totalBatchStock}
+                  readOnly
+                  placeholder="Select a product"
+                  className="w-full p-3 bg-gray-100 rounded-lg border border-gray-200 outline-none opacity-60 cursor-not-allowed"
+                />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold mb-1.5">Cost Price (RM)</label>
-                <input type="number" value={unitCost} onChange={(e) => setUnitCost(e.target.value)} placeholder="0.00" className="w-full p-3 bg-red-50 rounded-lg border border-red-100 outline-none" />
+                <input
+                  type="number"
+                  value={calculatedCost}
+                  readOnly
+                  placeholder="Auto-calculated"
+                  className="w-full p-3 bg-gray-100 rounded-lg border border-gray-200 outline-none opacity-60 cursor-not-allowed"
+                />
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-1.5">Reason</label>
