@@ -9,12 +9,10 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import { useEffect, useState } from "react";
 
 const drawerWidth = 220;
 
-let totalProducts = 2;
-let currentStock = 43;
-let totalRevenue = "1242.50";
 let wasteRate = 10.4;
 let foodSecurityScore = 25;
 
@@ -26,33 +24,6 @@ let itemSales = [
 
 let wasteItems = [
             { name: "Nasi Lemak", status: "Unsold", amount: "-RM 10.00", units: "5 units" },
-];
-
-const statCards = [
-  {
-    label: "Total Products",
-    value: totalProducts,
-    icon: <Inventory2OutlinedIcon sx={{ fontSize: 22, color: "#f97316" }} />,
-    iconBg: "#fff1e6",
-  },
-  {
-    label: "Current Stock",
-    value: `${currentStock} units`,
-    icon: <BarChartRoundedIcon sx={{ fontSize: 22, color: "#f59e0b" }} />,
-    iconBg: "#fef9ee",
-  },
-  {
-    label: "Total Revenue",
-    value: `RM ${totalRevenue}`,
-    icon: <AttachMoneyRoundedIcon sx={{ fontSize: 22, color: "#22c55e" }} />,
-    iconBg: "#f0fdf4",
-  },
-  {
-    label: "Waste Rate",
-    value: `${wasteRate}%`,
-    icon: <TrendingDownRoundedIcon sx={{ fontSize: 22, color: "#ef4444" }} />,
-    iconBg: "#fff1f2",
-  },
 ];
 
 const quickActions = [
@@ -103,6 +74,57 @@ function getScoreProgressColor(score: number) {
 const scoreColor = getScoreProgressColor(foodSecurityScore);
 
 export default function DashboardPage() {
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [currentStock, setCurrentStock] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+
+  useEffect(() => {
+      const saved = localStorage.getItem('freshstock_products');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          console.log(data);
+          const totals = data.reduce((sum: any, obj: any) => ({
+            totalRevenue: sum.totalRevenue + obj.sellingPrice,
+            currentStock: sum.currentStock + obj.inStock
+          }), { totalRevenue: 0, currentStock: 0 })
+          console.log(totals);
+          setTotalProducts(data.length);
+          setCurrentStock(totals.currentStock);
+          setTotalRevenue(totals.totalRevenue)
+        } catch (e) {
+          console.error("Failed to load products", e);
+        }
+      }
+  }, []);
+
+  const statCards = [
+  {
+    label: "Total Products",
+    value: totalProducts,
+    icon: <Inventory2OutlinedIcon sx={{ fontSize: 22, color: "#f97316" }} />,
+    iconBg: "#fff1e6",
+  },
+  {
+    label: "Current Stock",
+    value: `${currentStock} units`,
+    icon: <BarChartRoundedIcon sx={{ fontSize: 22, color: "#f59e0b" }} />,
+    iconBg: "#fef9ee",
+  },
+  {
+    label: "Total Revenue",
+    value: `RM ${totalRevenue.toFixed(2)}`,
+    icon: <AttachMoneyRoundedIcon sx={{ fontSize: 22, color: "#22c55e" }} />,
+    iconBg: "#f0fdf4",
+  },
+  {
+    label: "Waste Rate",
+    value: `${wasteRate}%`,
+    icon: <TrendingDownRoundedIcon sx={{ fontSize: 22, color: "#ef4444" }} />,
+    iconBg: "#fff1f2",
+  },
+];
+
   return (
     <Box
       sx={{
