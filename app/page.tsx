@@ -81,6 +81,7 @@ export default function DashboardPage() {
   const [wasteRate, setWasteRate] = useState(0);
   const [foodSecurityScore, setFoodSecurityScore] = useState(100);
   const [wasteLogs, setWasteLogs] = useState<WasteLog[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
       const savedProducts = localStorage.getItem('freshstock_products');
@@ -115,6 +116,8 @@ export default function DashboardPage() {
         if (data.hasOwnProperty("foodSecurityScore")) {
           setFoodSecurityScore(data["foodSecurityScore"]);
         }
+
+        setIsLoaded(true);
       }
   }, []);
 
@@ -146,6 +149,8 @@ export default function DashboardPage() {
     iconBg: "#fff1f2",
   },
 ];
+
+  if (!isLoaded) return <div className="ml-64 p-8">Loading...</div>;
 
   return (
     <Box
