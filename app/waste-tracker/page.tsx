@@ -9,7 +9,7 @@ interface WasteLog {
   costLost: number; wasteRate: number; aiSuggestion: string; date: string;
 }
 
-const WASTE_LOGS_KEY = 'freshstock_waste_logs';
+const WASTE_LOGS_KEY = 'freshstock_waste';
 
 const DEFAULT_LOGS: WasteLog[] = [
   {
