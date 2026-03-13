@@ -1,24 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { TrendingUp, AlertTriangle, CheckCircle, Trash2 } from 'lucide-react';
-import { Days_One } from 'next/font/google';
-
-//Types
-interface Product {
-  id: number;
-  name: string;
-  inStock: number;
-}
-
-interface PredictionResult {
-  id: string; // Unique ID for each prediction card
-  productName: string;
-  avgDailySales: number;
-  currentStock: number;
-  nextWeekNeeded: number;
-  isShortage: boolean;
-}
+import { Product, PredictionResult } from '@/constants';
 
 export default function StockPredictionPage() {
   const [products, setProducts] = useState<Product[]>([]);

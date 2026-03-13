@@ -1,31 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   CloudRain, Wind, Thermometer, Banknote, Fuel, 
   Ban, Snowflake, Ship, Bug, ArrowLeft, AlertTriangle, Info 
 } from 'lucide-react';
 
-// --- DATA STRUCTURE & SCENARIOS ---
-interface Product {
-  id: number;
-  name: string;
-  inStock: number;
-}
-
-interface Scenario {
-  id: string;
-  category: string;
-  title: string;
-  icon: React.ReactNode;
-  priceImpactText: string;
-  wasteImpactText: string;
-  priceMod: number; 
-  wasteMod: number; 
-  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-  specialAlert?: { title: string; text: string; type: 'security' | 'literacy' };
-  recommendations: string[];
-}
+import { Scenario, Product } from '@/constants';
 
 const SCENARIOS: Scenario[] = [
   // Climate & Natural Disaster

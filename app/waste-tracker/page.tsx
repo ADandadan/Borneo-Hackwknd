@@ -1,13 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Trash2, AlertTriangle, TrendingDown, DollarSign, Info, Sparkles, Sprout } from 'lucide-react';
-
-interface Product { id: number; name: string; inStock: number; sellingPrice: number; }
-interface WasteLog {
-  id: string; productName: string; quantity: number; reason: string;
-  costLost: number; wasteRate: number; aiSuggestion: string; date: string;
-}
+import { useState, useEffect } from 'react';
+import { Trash2, DollarSign, Sparkles, Sprout } from 'lucide-react';
+import { WasteLog, Product } from '@/constants';
 
 const WASTE_LOGS_KEY = 'freshstock_waste';
 

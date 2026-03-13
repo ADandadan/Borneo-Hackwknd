@@ -1,24 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Package, Trash2, Plus, X } from 'lucide-react';
-
-// --- Data Models ---
-interface Ingredient {
-  id: string; 
-  name: string;
-  quantity: number | string;
-  unit: string;
-  price: number | string;
-}
-
-interface Product {
-  id: number;
-  name: string;
-  inStock: number;
-  sellingPrice: number;
-  ingredients: Ingredient[];
-}
+import { Product, Ingredient } from '@/constants';
 
 export default function ProductStockPage() {
   // --- State ---
@@ -241,8 +225,8 @@ export default function ProductStockPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.length === 0 ? (
             <div className="col-span-full py-20 text-center bg-white rounded-3xl border border-dashed border-gray-200">
-               <Package size={48} className="mx-auto text-gray-300 mb-4" />
-               <p className="text-gray-400 font-medium text-lg">No products added yet. Click 'Add Product' to start.</p>
+              <Package size={48} className="mx-auto text-gray-300 mb-4" />
+              <p className="text-gray-400 font-medium text-lg">No products added yet. Click 'Add Product' to start.</p>
             </div>
           ) : (
             products.map((p) => (
@@ -263,7 +247,7 @@ export default function ProductStockPage() {
                 
                 <div className="space-y-2.5 text-sm mb-8 border-t border-gray-50 pt-5">
                   <p className="font-bold text-gray-400 uppercase tracking-wider text-[10px] mb-3">Ingredients</p>
-                  {p.ingredients.map((ing, idx) => (
+                  {p.ingredients?.map((ing, idx) => (
                     <div key={idx} className="flex justify-between items-center">
                       <span className="text-gray-600 font-medium">{ing.name} <span className="text-gray-400 text-xs ml-1">({ing.quantity}{ing.unit})</span></span>
                       <span className="font-bold text-gray-800">RM {Number(ing.price).toFixed(2)}</span>
@@ -274,7 +258,7 @@ export default function ProductStockPage() {
                 <div className="flex justify-between items-end border-t border-gray-50 pt-5 mt-auto">
                   <div>
                     <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Total Cost</p>
-                    <p className="text-lg font-bold text-gray-900">RM {calculateTotalCost(p.ingredients).toFixed(2)}</p>
+                    <p className="text-lg font-bold text-gray-900">RM {calculateTotalCost(p.ingredients ?? []).toFixed(2)}</p>
                   </div>
                   <div>
                     <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Selling</p>
@@ -282,7 +266,7 @@ export default function ProductStockPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Profit</p>
-                    <p className="text-lg font-bold text-green-600">RM {(p.sellingPrice - calculateTotalCost(p.ingredients)).toFixed(2)}</p>
+                    <p className="text-lg font-bold text-green-600">RM {(p.sellingPrice - calculateTotalCost(p.ingredients ?? [])).toFixed(2)}</p>
                   </div>
                 </div>
               </div>

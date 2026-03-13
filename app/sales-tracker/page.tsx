@@ -1,32 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { BarChart3, TrendingUp, TrendingDown, Info, Plus, DollarSign, Package } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { TrendingUp, TrendingDown, Info, Plus, DollarSign, Package } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-
-// --- Data Models ---
-interface Product {
-  id: number;
-  name: string;
-  inStock: number;
-  sellingPrice: number;
-}
-
-interface SaleEntry {
-  id: string;
-  date: string;
-  productId: number;
-  productName: string;
-  sellingPrice: number;
-  quantitySold: number;
-  revenue: number;
-}
-
-interface WasteLog {
-  id: string;
-  quantity: number;
-  costLost: number;
-}
+import { Product, SaleEntry, WasteLog } from '@/constants';
 
 export default function SalesTrackerPage() {
   // --- State ---

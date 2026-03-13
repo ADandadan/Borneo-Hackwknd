@@ -1,13 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Store, TrendingUp, TrendingDown, PlusCircle, Trash2, HelpCircle, FileText, UploadCloud, Globe, CloudRain, Truck } from 'lucide-react';
-
-interface Supplier {
-  id: string; name: string; ingredient: string;
-  prevPrice: number; currentPrice: number;
-  percentIncrease: number; marginImpact: number;
-}
+import { useState, useEffect } from 'react';
+import { TrendingUp, TrendingDown, PlusCircle, Trash2, HelpCircle, FileText, UploadCloud, Globe, CloudRain, Truck } from 'lucide-react';
+import { Supplier } from '@/constants';
 
 export default function SupplierPricesPage() {
   const [name, setName] = useState('');
