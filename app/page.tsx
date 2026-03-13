@@ -117,8 +117,9 @@ export default function DashboardPage() {
           setFoodSecurityScore(data["foodSecurityScore"]);
         }
 
-        setIsLoaded(true);
+        
       }
+      setIsLoaded(true);
   }, []);
 
   const scoreColor = getScoreProgressColor(foodSecurityScore);
