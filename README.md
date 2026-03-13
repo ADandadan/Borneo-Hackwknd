@@ -121,7 +121,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Environment Variables
 
-Copy `.env.example` to `.env.local` and fill in the required value:
+Copy `.env.example` to `.env` and fill in the required value:
 
 ```text
 GEMINI_API_KEY=YOUR_API_KEY
