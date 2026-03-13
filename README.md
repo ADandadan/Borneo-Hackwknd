@@ -95,7 +95,7 @@ Simulate real-world disruption scenarios grouped into categories like **Climate 
 
 ## Getting Started
 
-Install dependencies:
+First clone this repository, then install dependencies:
 
 ```bash
 npm install
@@ -127,7 +127,7 @@ Copy `.env.example` to `.env` and fill in the required value:
 GEMINI_API_KEY=YOUR_API_KEY
 ```
 
-Generate your key at [Google AI Studio](https://aistudio.google.com/app/apikey).
+Generate your key at [Google AI Studio](https://aistudio.google.com/app/apikey). This allows certain features to work.
 
 ---
 
@@ -175,24 +175,24 @@ Open the app, the Dashboard loads by default. Observe the **Food Security Score*
 Click **Product Stock** in the sidebar. Browse the five preloaded products.
 Try clicking **+ Add Product** to add a new item with a name, stock quantity, and selling price. Notice the profit margin calculates automatically.
 
-### 3. Waste & Impact Tracker
+### 3. Stock Prediction
+
+Click **Stock Prediction**. Click **Run Auto-Prediction**, the system will generate forecast cards for all products based on the mock sales history. Cards marked **Restock Required** in red indicate products where 7-day demand exceeds current stock. You can also use **Manual Entry** to select a product and input your own daily sales estimate, then click **Calculate**.
+
+### 4. Waste & Impact Tracker
 
 Click **Waste Tracker**. Select any product from the dropdown, enter a waste
 quantity (e.g. 5), set Total Batch Stock (e.g. 50), select a reason such as  *Spoiled*, then click **Calculate Impact & Log**. Wait a moment — the Gemini API will return a live AI recommendation specific to your input. Scroll down to see the entry added to Waste History alongside its AI insight.
 
 > ⚠️ This is the only feature making a live API call. Ensure `GEMINI_API_KEY` is set in `.env.local` before testing.
 
-### 4. Sales Tracker
-
-Click **Sales Tracker**. The revenue trend chart and product rankings are already populated from mock sales data spanning the past week. Try clicking **+ Record Sale**, select a product, enter a quantity, and submit. Watch the total revenue and items sold KPIs update immediately.
-
-### 5. Stock Prediction
-
-Click **Stock Prediction**. Click **Run Auto-Prediction**, the system will generate forecast cards for all products based on the mock sales history. Cards marked **Restock Required** in red indicate products where 7-day demand exceeds current stock. You can also use **Manual Entry** to select a product and input your own daily sales estimate, then click **Calculate**.
-
-### 6. Market Price Intelligence
+### 5. Market Price Intelligence
 
 Click **Supplier Prices**. The three mock suppliers are already visible under Inflation & Margin Analysis. Try logging a new price change: enter a supplier name, ingredient, previous price (e.g. 5.00), and current price (e.g. 7.00), then click **Analyze Price Change**. The system will calculate the percentage increase and suggest a selling price adjustment.
+
+### 6. Sales Tracker
+
+Click **Sales Tracker**. The revenue trend chart and product rankings are already populated from mock sales data spanning the past week. Try clicking **+ Record Sale**, select a product, enter a quantity, and submit. Watch the total revenue and items sold KPIs update immediately.
 
 ### 7. Situation Problem Solver
 
