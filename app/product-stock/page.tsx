@@ -34,7 +34,8 @@ export default function ProductStockPage() {
 
   // Save to localStorage whenever products change
   useEffect(() => {
-    if (isLoaded) {
+    const productsJSON = JSON.stringify(products);
+    if (isLoaded && productsJSON !== "[]") {
       localStorage.setItem('freshstock_products', JSON.stringify(products));
     }
   }, [products, isLoaded]);

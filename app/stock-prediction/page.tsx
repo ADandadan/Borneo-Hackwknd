@@ -36,7 +36,8 @@ export default function StockPredictionPage() {
   useEffect(() => {
     // Only save if the "Lock" is open. 
     // This prevents saving [] over your data during page transitions.
-    if (hasLoadedFromStorage.current) {
+    const predictionsJSON = JSON.stringify(predictions);
+    if (hasLoadedFromStorage.current && predictionsJSON !== "[]") {
       localStorage.setItem('freshstock_predictions', JSON.stringify(predictions));
     }
   }, [predictions]);
